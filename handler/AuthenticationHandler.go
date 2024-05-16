@@ -7,12 +7,13 @@ import (
 	"stakeholder-service/mapper"
 	"stakeholder-service/service"
 
-	"soa/grpc/proto/stakeholder"
+	"stakeholder-service/proto/stakeholder"
 
 	"github.com/google/uuid"
 )
 
 type AuthenticationHandler struct {
+	stakeholder.UnimplementedStakeholderServiceServer
 	AuthenticationService *service.AuthenticationService
 }
 

@@ -6,7 +6,6 @@ require (
 	github.com/google/uuid v1.6.0
 	gorm.io/driver/mysql v1.5.5
 	gorm.io/gorm v1.25.8
-	soa/grpc/proto v0.0.1
 )
 
 require (
@@ -29,4 +28,3 @@ require (
 	google.golang.org/grpc v1.64.0
 )
 
-replace soa/grpc/proto => /app/proto
