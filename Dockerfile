@@ -1,6 +1,5 @@
 FROM golang:alpine AS builder
 WORKDIR /app
-COPY proto /app/proto
 COPY . .
-EXPOSE 8085
+EXPOSE 8000
 ENTRYPOINT ["go", "run", "main.go"]

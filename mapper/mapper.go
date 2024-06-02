@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"soa/grpc/proto/stakeholder"
 	"stakeholder-service/dto"
+	"stakeholder-service/proto/stakeholder"
 )
 
 func MapToModel(touristRequest *stakeholder.RegisterTouristRequest) *dto.AccountRegistrationDto {

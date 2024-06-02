@@ -2,23 +2,26 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
 	"stakeholder-service/handler"
 	"stakeholder-service/model"
 	"stakeholder-service/repository"
 	"stakeholder-service/service"
+	"syscall"
 
 	"net"
+
+	"stakeholder-service/proto/stakeholder"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-
-	"soa/grpc/proto/stakeholder"
 )
 
 func initDB() *gorm.DB {
-	connectionStr := "root:super@tcp(localhost:3306)/soa?charset=utf8mb4&parseTime=True&loc=Local"
+	connectionStr := "root:root@tcp(stakeholder_db:3307)/soa?charset=utf8mb4&parseTime=True&loc=Local"
 	database, err := gorm.Open(mysql.Open(connectionStr), &gorm.Config{})
 	if err != nil {
 		print(err)
@@ -35,18 +38,27 @@ func startServer(authHandler *handler.AuthenticationHandler) {
 	//router.HandleFunc("/", authHandler.RegisterTourist).Methods("POST")
 	//router.HandleFunc("/login", authHandler.Login).Methods("POST")
 
-	lis, err := net.Listen("tcp", "localhost:8085")
+	lis, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
-
-	stakeholder.RegisterStakeholdersServiceServer(grpcServer, authHandler)
+	grpcServer := grpc.NewServer()
 	reflection.Register(grpcServer)
-	grpcServer.Serve(lis)
 
+	stakeholder.RegisterStakeholderServiceServer(grpcServer, authHandler)
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatal("server error: ", err)
+		}
+	}()
+
+	stopCh := make(chan os.Signal)
+	signal.Notify(stopCh, syscall.SIGTERM)
+
+	<-stopCh
+
+	grpcServer.Stop()
 	/*
 		allowedOrigins := handlers.AllowedOrigins([]string{"*"})
 		allowedMethods := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
@@ -67,6 +79,8 @@ func startServer(authHandler *handler.AuthenticationHandler) {
 
 func main() {
 
+	print("Stakeholder starting print")
+	log.Println("Stake holde staring")
 	database := initDB()
 	if database == nil {
 		print("FAILED TO CONNECT TO DB")
