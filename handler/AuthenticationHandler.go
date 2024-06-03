@@ -15,7 +15,6 @@ import (
 type AuthenticationHandler struct {
 	stakeholder.UnimplementedStakeholderServiceServer
 	AuthenticationService *service.AuthenticationService
-	stakeholder.UnimplementedStakeholderServiceServer
 }
 
 func (handler *AuthenticationHandler) RegisterTourist(ctx context.Context, request *stakeholder.RegisterTouristRequest) (*stakeholder.RegisterTouristResponse, error) {
